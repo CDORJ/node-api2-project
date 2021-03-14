@@ -170,6 +170,21 @@ router.put("/:id", async (req, res) => {
 -----------------------------------------------
 */
 
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const post = await Post.remove(id);
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).json({
+        message: "The post with the specified ID does not exist",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "The post could not be removed" });
+  }
+});
 /* get /api/posts/:id/comments
 
 - returns an array of all the comment objects associated with the post with the specified id
@@ -185,5 +200,23 @@ router.put("/:id", async (req, res) => {
 - return the following JSON: { message: "The comments information could not be retrieved" }.
 -----------------------------------------------
 */
+
+router.get("/:id/comments", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const post = await Post.findPostComments(id);
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).json({
+        message: "The post with the specified ID does not exist",
+      });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "The comments information could not be retrieved" });
+  }
+});
 
 module.exports = router;
