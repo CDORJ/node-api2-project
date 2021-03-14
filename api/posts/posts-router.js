@@ -57,20 +57,6 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
-// router.get("/:id", async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const post = await Post.findById(id);
-//     res.status(200).json(post);
-//   } catch (error) {
-//     res
-//       .status(404)
-//       .json({ message: "The post with the specified ID does not exist" });
-//   }
-//   res
-//     .status(500)
-//     .json({ message: "The post information could not be retrieved" });
-// });
 
 /* post /api/posts
 
@@ -95,6 +81,26 @@ router.get("/:id", async (req, res) => {
 -----------------------------------------------
 
 */
+
+router.post("/", async (req, res) => {
+  const post = req.body;
+  if (!post.title || !post.contents) {
+    res
+      .status(400)
+      .json({ message: "Please provide title and contents for the post" });
+  } else {
+    try {
+      const newPost = await Post.insert(post);
+      res.status(201).json(newPost);
+    } catch (err) {
+      res.status(500).json({
+        message: "There was an error while saving the post to the database",
+      });
+    }
+  }
+});
+
+// REVIEW why does this only return the ID in postman and not the entire post?
 
 /* put /api/posts/:id
 - updates the post with the specified id using data from the request body and returns the modified document, not the original
