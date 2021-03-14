@@ -4,7 +4,7 @@ const { Database } = require("sqlite3");
 const Post = require("./posts-model.js");
 
 /* get /api/posts
-- returns an array of all the posts obkects contained in the database
+- returns an array of all the posts objects contained in the database
 
 - if there's an ERROR retrieving the posts from the database
    - respond with HTTP 500
@@ -13,8 +13,16 @@ const Post = require("./posts-model.js");
    -----------------------------------------------
 */
 
-router.get("/", (req, res) => {});
-module.exports = router;
+router.get("/", async (req, res) => {
+  try {
+    const post = await Post.find();
+    res.status(200).json(post);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "The posts information could not be retrieved" });
+  }
+});
 
 /* get /api/posts/:id
 - returns the post object with the specified id
@@ -113,3 +121,5 @@ module.exports = router;
 - return the following JSON: { message: "The comments information could not be retrieved" }.
 -----------------------------------------------
 */
+
+module.exports = router;
