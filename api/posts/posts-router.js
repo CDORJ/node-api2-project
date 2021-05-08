@@ -82,16 +82,17 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
+  const postToDelete = await Posts.findById(id);
 
   try {
-    const deletedPost = await Posts.remove(id);
+    const confirmed = await Posts.remove(id);
 
-    if (deletedPost) {
-      res.status(200).json(deletedPost);
-    } else {
+    if (!confirmed) {
       res
         .status(404)
         .json({ message: "The post with the specified ID does not exist" });
+    } else {
+      res.status(200).json(postToDelete);
     }
   } catch (error) {
     res.status(500).json({ message: "The post could not be removed" });
@@ -100,15 +101,20 @@ router.delete("/:id", async (req, res) => {
 
 router.get("/:id/comments", async (req, res) => {
   const { id } = req.params;
+  const requestedPost = await Posts.findById(id);
   const comments = await Posts.findPostComments(id);
 
   try {
-    if (comments) {
-      res.status(200).json(comments);
-    } else {
+    if (!requestedPost) {
       res
         .status(404)
         .json({ message: "The post with the specified ID does not exist" });
+    } else if (comments.length < 1) {
+      res
+        .status(200)
+        .json({ message: "There are no comments for the requested post" });
+    } else {
+      res.status(200).json(comments);
     }
   } catch (error) {
     res
