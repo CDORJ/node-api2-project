@@ -36,16 +36,17 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, contents } = req.body;
+  const newPostInfo = req.body;
 
   try {
-    if (!title || !contents) {
+    if (!newPostInfo.title || !newPostInfo.contents) {
       res
         .status(400)
         .json({ message: "Please provide title and contents for the post" });
     } else {
-      const newPost = await Posts.insert(title, contents);
-      res.status(201).send(newPost);
+      const createdPost = await Posts.insert(newPostInfo);
+      const updatedPost = await Posts.findById(createdPost.id);
+      res.status(201).json(updatedPost);
     }
   } catch (error) {
     res.status(500).json({
